@@ -4,3 +4,7 @@ sonarqube_cmd.txt
 .sonarqube/
 Kompresja danych/UnaryCoding/obj/
 Kompresja danych/UnaryCoding/bin/
+Kompresja danych/HuffmanCoding/obj/
+Kompresja danych/HuffmanCoding/bin/
+Kompresja danych/packages/
+Kompresja danych/bw-output/
