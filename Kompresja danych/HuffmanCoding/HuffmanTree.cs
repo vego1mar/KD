@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 
 namespace HuffmanCoding
@@ -31,9 +32,7 @@ namespace HuffmanCoding
             {
             BuildAlphabetFromMessage( message );
             BuildHuffmanCodeTree();
-            // TODO: Build a new dictionary of (symbol, Huffman code) based on TreeQueue
-            // TODO: Retrieve Huffman code from the new dictionary based on a message
-            return null;
+            return EncodeMessageUsingBuildedHuffmanCodeTree( message );
             }
         #endregion
 
@@ -70,6 +69,7 @@ namespace HuffmanCoding
         #region BuildHuffmanCodeTree() : void
         private void BuildHuffmanCodeTree()
             {
+            TreeQueue.ClearQueue();
             InsertDictionaryPairsAsLeafsOfTreePriorityQueue();
             ProceedWithHuffmanCodeTreeBuilding();
             }
@@ -102,6 +102,90 @@ namespace HuffmanCoding
                 node.Frequency = node.LeftNode.Frequency + node.RightNode.Frequency;
                 TreeQueue.Insert( node );
                 }
+            }
+        #endregion
+
+        #region EncodeMessageUsingBuildedHuffmanCodeTree(...) : string
+        private string EncodeMessageUsingBuildedHuffmanCodeTree( string message )
+            {
+            Dictionary<char,string> dictionary = TreeQueue.TraverseQueueForGainingLeafs();
+            StringBuilder encodedMessage = new StringBuilder();
+            string symbolHuffmanCode;
+
+            foreach ( var symbol in message ) {
+                dictionary.TryGetValue( symbol, out symbolHuffmanCode );
+                encodedMessage.Append( symbolHuffmanCode );
+                }
+
+            return encodedMessage.ToString();
+            }
+        #endregion
+
+        #region GetLastLeafs() : Dictionary<char,string>
+        public Dictionary<char,string> GetLastLeafs()
+            {
+            return TreeQueue.Leafs;
+            }
+        #endregion
+
+        #region Decode(...) : string
+        [Obsolete]
+        public string Decode( string text )
+            {
+            int searchingStringLength = GetMaximumStringLengthFromLeafs();
+            int nextPositionInText = 0;
+            StringBuilder decodedMessage = new StringBuilder();
+
+            while ( nextPositionInText < text.Length ) {
+                int currentValidLength = searchingStringLength;
+
+                while ( currentValidLength > 0 ) {
+                    string codedSample = text.Substring( nextPositionInText, currentValidLength );
+                    char codedSymbol;
+
+                    if ( IsHuffmanCodeInCodingSet(codedSample, out codedSymbol) ) {
+                        decodedMessage.Append( codedSymbol );
+                        nextPositionInText += currentValidLength;
+                        }
+
+                    currentValidLength--;
+                    }
+                }
+
+            return null;
+            }
+        #endregion
+
+        #region GetMaximumStringLengthFromLeafs() : int
+        private int GetMaximumStringLengthFromLeafs()
+            {
+            int maximumLength = 0;
+
+            foreach ( var pair in TreeQueue.Leafs ) {
+                if ( pair.Value.Length > maximumLength ) {
+                    maximumLength = pair.Value.Length;
+                    }
+                }
+
+            return maximumLength;
+            }
+        #endregion
+
+        #region IsHuffmanCodeInCodingSet(...) : bool
+        [Obsolete]
+        private bool IsHuffmanCodeInCodingSet( string huffmanCode, out char symbol )
+            {
+            symbol = '\0';
+            string code;
+
+            for ( int i=0x20; i<0x7F; i++ ) {
+                if ( TreeQueue.Leafs.TryGetValue(Convert.ToChar( i ), out code) && code == huffmanCode ) {
+                    symbol = Convert.ToChar( i );
+                    return true;
+                    }
+                }
+
+            return false;
             }
         #endregion
 

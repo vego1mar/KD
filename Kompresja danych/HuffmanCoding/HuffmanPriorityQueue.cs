@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 
 namespace HuffmanCoding
     {
@@ -7,6 +8,8 @@ namespace HuffmanCoding
 
         #region Properties
         private List<HuffmanNode> PriorityQueue { set; get; }
+        private StringBuilder TraverseHuffmanCode { set; get; }
+        public Dictionary<char,string> Leafs { private set; get; } 
         #endregion
 
         #region HuffmanPriorityQueue()
@@ -21,6 +24,8 @@ namespace HuffmanCoding
             {
             PriorityQueue = new List<HuffmanNode>();
             PriorityQueue.Clear();
+            TraverseHuffmanCode = new StringBuilder( 0 );
+            Leafs = new Dictionary<char, string>();
             }
         #endregion
 
@@ -59,6 +64,48 @@ namespace HuffmanCoding
         public void DeleteMinimumNode()
             {
             PriorityQueue.RemoveAt( GetMinimumNodeIndex() );
+            }
+        #endregion
+
+        #region ClearQueue() : void
+        public void ClearQueue()
+            {
+            PriorityQueue.Clear();
+            }
+        #endregion
+
+        #region TraverseQueueForGainingLeafs() : Dictionary<char,string>
+        public Dictionary<char,string> TraverseQueueForGainingLeafs()
+            {
+            TraverseHuffmanCode.Clear();
+            Leafs.Clear();
+            HuffmanNode root = PriorityQueue[0];
+            TraverseInOrder( root );
+            return Leafs;
+            }
+        #endregion
+
+        #region TraverseInOrder(...) : void
+        private void TraverseInOrder( HuffmanNode node )
+            {
+            if ( node.LeftNode != null ) {
+                TraverseHuffmanCode.Append( '0' );
+                TraverseInOrder( node.LeftNode );
+                }
+
+            if ( node.Symbol != HuffmanNode.DEFAULT_SYMBOL ) {
+                Leafs.Add( node.Symbol, TraverseHuffmanCode.ToString() );
+                TraverseHuffmanCode.Remove( TraverseHuffmanCode.Length - 1, 1 );
+                }
+
+            if ( node == PriorityQueue[0] ) {
+                TraverseHuffmanCode.Clear();
+                }
+
+            if ( node.RightNode != null ) {
+                TraverseHuffmanCode.Append( '1' );
+                TraverseInOrder( node.RightNode );
+                }
             }
         #endregion
 
