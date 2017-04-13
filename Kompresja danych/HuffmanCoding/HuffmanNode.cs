@@ -1,7 +1,7 @@
 ﻿namespace HuffmanCoding
-    {
+{
     class HuffmanNode
-        {
+    {
 
         #region Constants
         public const char DEFAULT_SYMBOL = '\r';
@@ -16,20 +16,20 @@
 
         #region HuffmanNode()
         public HuffmanNode()
-            {
+        {
             SetDefaultPropertiesValues();
-            }
+        }
         #endregion
 
         #region SetDefaultPropertiesValues() : void
         private void SetDefaultPropertiesValues()
-            {
+        {
             Symbol = DEFAULT_SYMBOL;
             Frequency = 0.0;
             LeftNode = null;
             RightNode = null;
-            }
+        }
         #endregion
 
-        }
     }
+}
