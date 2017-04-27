@@ -16,7 +16,7 @@ namespace UnaryCoding
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new WfMainForm());
+			Application.Run(new MainWindow());
 		}
 	}
 }

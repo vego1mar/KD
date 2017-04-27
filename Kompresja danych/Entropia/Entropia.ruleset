@@ -1,4 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="SonarQube - Kompresja danych Sonar way" ToolsVersion="14.0">
-  <Include Path="..\sonarqube\kdcsharp.ruleset" Action="Default" />
-</RuleSet>
