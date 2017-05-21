@@ -15,28 +15,19 @@ namespace ArithmeticCoding
 
         private void BtnEncode_Click( object sender, EventArgs e )
         {
-            string exceptionInfo;
+            TextBox[] providers = { txbCoderInputP1, txbCoderInputP2, txbCoderInputP3, txbCoderInputP4, txbCoderInputP5 };
             Dictionary<int, ulong> symbolsAlphabet = GetAlphabetOfOccurences( txbCoderInputBoard.Text );
-            List<double> convertees = ValidateThatProvidedProbabilitiesAreNumbers( out exceptionInfo, symbolsAlphabet );
+            List<double> convertees;
 
-            if ( convertees == null ) {
-                string text = "A problem with number convertion:" + Environment.NewLine + exceptionInfo;
-                string caption = System.Reflection.MethodBase.GetCurrentMethod().Name;
-                MessageBox.Show( text, caption, MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
-                return;
-            }
-
-            if ( !ValidateThatProvidedProbabilitiesSumUpToOneness( symbolsAlphabet.Count, convertees ) ) {
-                string text = "The provided probabilities are not sum up to oneness.";
-                string caption = System.Reflection.MethodBase.GetCurrentMethod().Name;
-                MessageBox.Show( text, caption, MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
+            if ( !IsInputDataValidated( providers, symbolsAlphabet.Count, out convertees, true ) ) {
                 return;
             }
 
             Dictionary<int, double> cumulativeProbabilities = GetCumulativeProbabilities( symbolsAlphabet, convertees );
-            List<double> borders;
-            double arithmeticCode = GetArithmeticCode( cumulativeProbabilities, txbCoderInputBoard.Text, out borders );
-            UpdateUIWithEncodingResults( arithmeticCode, borders, txbCoderOutputBoard );
+            List<ArithmeticCodeBorders> borders;
+            double marker = GetArithmeticCodeMarker( cumulativeProbabilities, txbCoderInputBoard.Text, out borders );
+            UpdateUIWithEncodingResults( marker, borders, txbCoderOutputBoard );
+            UpdateUIInDecoderTabPage( marker );
         }
 
         private void TxbCoderInputBoard_TextChanged( object sender, EventArgs e )
@@ -81,7 +72,7 @@ namespace ArithmeticCoding
         private void UpdateUIToInformAboutRecognizedSymbols( Dictionary<int, ulong> coderInputBoardAlphabet )
         {
             TextBox[] informees = {
-                txbTextP1, txbTextP2, txbTextP3, txbTextP4, txbTextP5
+                txbCoderTextP1, txbCoderTextP2, txbCoderTextP3, txbCoderTextP4, txbCoderTextP5
             };
 
             int j = 0;
@@ -94,6 +85,14 @@ namespace ArithmeticCoding
             for ( int i = j; i < informees.Length; i++ ) {
                 informees[i].Text = "p" + (i + 1).ToString() + " = ";
             }
+
+            TextBox[] decoderInformees = {
+                txbDecoderTextP1, txbDecoderTextP2, txbDecoderTextP3, txbDecoderTextP4, txbDecoderTextP5
+            };
+
+            for ( int i = 0; i < decoderInformees.Length; i++ ) {
+                decoderInformees[i].Text = informees[i].Text;
+            }
         }
 
         private void SetCursorAtEnd( TextBox textBox )
@@ -102,17 +101,13 @@ namespace ArithmeticCoding
             textBox.SelectionLength = 0;
         }
 
-        private List<double> ValidateThatProvidedProbabilitiesAreNumbers( out string exceptionMessage, Dictionary<int, ulong> symbolsAlphabet )
+        private List<double> ValidateThatProvidedProbabilitiesAreNumbers( out string exceptionMessage, int symbolsAlphabetCount, TextBox[] providers )
         {
             exceptionMessage = null;
             List<double> convertees = new List<double>();
 
-            TextBox[] providers = {
-                txbInputP1, txbInputP2, txbInputP3, txbInputP4, txbInputP5
-            };
-
             try {
-                for ( int i = 0; i < symbolsAlphabet.Count; i++ ) {
+                for ( int i = 0; i < symbolsAlphabetCount; i++ ) {
                     convertees.Add( Convert.ToDouble( providers[i].Text ) );
                 }
             }
@@ -167,13 +162,15 @@ namespace ArithmeticCoding
             return cumulativeProbabilities;
         }
 
-        private double GetArithmeticCode( Dictionary<int, double> cumulativeProbabilities, string message, out List<double> endBorders )
+        private double GetArithmeticCodeMarker( Dictionary<int, double> cumulativeProbabilities, string message, out List<ArithmeticCodeBorders> borders )
         {
             int[] symbols;
             double[] probabilities;
             RetrieveKeysAndValues( cumulativeProbabilities, out symbols, out probabilities );
             double leftBorder = 0.0;
             double rightBorder = 1.0;
+            borders = new List<ArithmeticCodeBorders>();
+            borders.Add( new ArithmeticCodeBorders( leftBorder, rightBorder ) );
 
             for ( int i = 0; i < message.Length; i++ ) {
                 double substractor = rightBorder - leftBorder;
@@ -182,13 +179,10 @@ namespace ArithmeticCoding
                 double currentRightBorder = leftBorder + substractor * probabilities[currentIndex];
                 leftBorder = currentLeftBorder;
                 rightBorder = currentRightBorder;
+                borders.Add( new ArithmeticCodeBorders( leftBorder, rightBorder ) );
             }
 
-            endBorders = new List<double>() {
-                leftBorder, rightBorder
-            };
-
-            return (rightBorder - leftBorder) / 2.0;
+            return (rightBorder + leftBorder) / 2.0;
         }
 
         private void RetrieveKeysAndValues<T1, T2>( Dictionary<T1, T2> dictionary, out T1[] keys, out T2[] values )
@@ -217,20 +211,135 @@ namespace ArithmeticCoding
             return index;
         }
 
-        private void UpdateUIWithEncodingResults( double arithmeticCode, List<double> endBorders, TextBox textBox )
+        private void UpdateUIWithEncodingResults( double arithmeticCode, List<ArithmeticCodeBorders> borders, TextBox textBox )
         {
-            const string DOUBLE_FORMAT = "{0:F4}";
+            const string DOUBLE_FORMAT = "{0:F16}";
             StringBuilder builder = new StringBuilder();
-            builder.Append( "Left border      =  " );
-            builder.AppendFormat( DOUBLE_FORMAT, endBorders[0] );
-            builder.AppendLine();
-            builder.Append( "Right border     =  " );
-            builder.AppendFormat( DOUBLE_FORMAT, endBorders[1] );
-            builder.AppendLine();
-            builder.Append( "Arithmetic code  =  " );
+            builder.Append( "Marker = " );
             builder.AppendFormat( DOUBLE_FORMAT, arithmeticCode );
             builder.AppendLine();
+            builder.AppendLine();
+
+            foreach ( var interval in borders ) {
+                builder.Append( "< " );
+                builder.AppendFormat( DOUBLE_FORMAT, interval.LeftBorder );
+                builder.Append( " ; " );
+                builder.AppendFormat( DOUBLE_FORMAT, interval.RightBorder );
+                builder.Append( " )" );
+                builder.AppendLine();
+            }
+
             textBox.Text = builder.ToString();
+        }
+
+        private void UpdateUIInDecoderTabPage( double marker )
+        {
+            txbDecoderMarkerInput.Text = marker.ToString();
+            txbDecoderSourceLengthInput.Text = txbCoderInputBoard.Text.Length.ToString();
+            txbDecoderInputP1.Text = txbCoderInputP1.Text;
+            txbDecoderInputP2.Text = txbCoderInputP2.Text;
+            txbDecoderInputP3.Text = txbCoderInputP3.Text;
+            txbDecoderInputP4.Text = txbCoderInputP4.Text;
+            txbDecoderInputP5.Text = txbCoderInputP5.Text;
+        }
+
+        private void BtnDecoderDecode_Click( object sender, EventArgs e )
+        {
+            TextBox[] providers = { txbDecoderInputP1, txbDecoderInputP2, txbDecoderInputP3, txbDecoderInputP4, txbDecoderInputP5 };
+            TextBox[] decodingSpecificProviders = { txbDecoderMarkerInput, txbDecoderSourceLengthInput };
+            Dictionary<int, ulong> symbolsAlphabet = GetAlphabetOfOccurences( txbCoderInputBoard.Text );
+            List<double> convertees;
+            List<double> decodingSpecificConvertees;
+
+            if ( !IsInputDataValidated( providers, symbolsAlphabet.Count, out convertees, true ) ) {
+                return;
+            }
+
+            if ( !IsInputDataValidated( decodingSpecificProviders, decodingSpecificProviders.Length, out decodingSpecificConvertees, false ) ) {
+                return;
+            }
+
+            double marker = decodingSpecificConvertees[0];
+            ulong sourceLength = Convert.ToUInt64( decodingSpecificConvertees[1] );
+            int[] keys;
+            ulong[] values;
+            RetrieveKeysAndValues( symbolsAlphabet, out keys, out values );
+            txbDecoderOutputBoard.Text = GetArithmeticCodeMessage( marker, sourceLength, convertees, keys );
+        }
+
+        private bool IsInputDataValidated( TextBox[] textProviders, int symbolsAlphabetCount, out List<double> convertees, bool isOnenessChecked )
+        {
+            string exceptionInfo;
+            convertees = ValidateThatProvidedProbabilitiesAreNumbers( out exceptionInfo, symbolsAlphabetCount, textProviders );
+
+            if ( convertees == null ) {
+                string text = "A problem with number convertion:" + Environment.NewLine + exceptionInfo;
+                string caption = System.Reflection.MethodBase.GetCurrentMethod().Name;
+                MessageBox.Show( text, caption, MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
+                return false;
+            }
+
+            if ( isOnenessChecked && !ValidateThatProvidedProbabilitiesSumUpToOneness( symbolsAlphabetCount, convertees ) ) {
+                string text = "The provided probabilities are not sum up to oneness.";
+                string caption = System.Reflection.MethodBase.GetCurrentMethod().Name;
+                MessageBox.Show( text, caption, MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
+                return false;
+            }
+
+            return true;
+        }
+
+        private string GetArithmeticCodeMessage( double marker, ulong sourceLength, List<double> probabilities, int[] symbols )
+        {
+            double[] currentIntervalPoints = new double[probabilities.Count + 1];
+            currentIntervalPoints[0] = 0.0;
+            double currentCumulativeSum = 0.0;
+            StringBuilder builder = new StringBuilder();
+            double[] cumulativeIntervals = new double[currentIntervalPoints.Length];
+
+            for ( int i = 0; i < probabilities.Count; i++ ) {
+                currentCumulativeSum += probabilities[i];
+                currentIntervalPoints[i + 1] = currentCumulativeSum;
+            }
+
+            CopyArrayInto( currentIntervalPoints, cumulativeIntervals );
+            ArithmeticCodeInterval nextSymbol = SpecifySymbolAndIntervalNumberByClassifyingMarker( marker, currentIntervalPoints, symbols );
+            builder.Append( nextSymbol.Symbol );
+
+            for ( ulong i = 0; i < sourceLength - 1; i++ ) {
+                currentIntervalPoints[0] = currentIntervalPoints[nextSymbol.Interval];
+                currentIntervalPoints[currentIntervalPoints.Length - 1] = currentIntervalPoints[nextSymbol.Interval + 1];
+
+                for ( int j = 1; j < currentIntervalPoints.Length - 1; j++ ) {
+                    double intervalLength = currentIntervalPoints[currentIntervalPoints.Length - 1] - currentIntervalPoints[0];
+                    currentIntervalPoints[j] = cumulativeIntervals[j] * intervalLength + currentIntervalPoints[0];
+                }
+
+                nextSymbol = SpecifySymbolAndIntervalNumberByClassifyingMarker( marker, currentIntervalPoints, symbols );
+                builder.Append( nextSymbol.Symbol );
+            }
+
+            return builder.ToString();
+        }
+
+        private ArithmeticCodeInterval SpecifySymbolAndIntervalNumberByClassifyingMarker( double marker, double[] intervalPoints, int[] symbols )
+        {
+            for ( int i = 0; i < intervalPoints.Length - 1; i++ ) {
+                if ( marker >= intervalPoints[i] && marker <= intervalPoints[i + 1] ) {
+                    char symbol = Convert.ToChar( symbols[i] );
+                    uint interval = Convert.ToUInt32( i );
+                    return new ArithmeticCodeInterval( symbol, interval );
+                }
+            }
+
+            return null;
+        }
+
+        private void CopyArrayInto<T>( T[] source, T[] target )
+        {
+            for ( int i = 0; i < source.Length; i++ ) {
+                target[i] = source[i];
+            }
         }
 
     }
