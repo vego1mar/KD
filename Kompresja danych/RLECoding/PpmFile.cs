@@ -209,6 +209,7 @@ namespace RLECoding
 
         private int GetPixels( ref int startIndex )
         {
+            Data.Pixels = new List<PpmRgbPixel>();
             int j = 0;
 
             for ( j = startIndex + 1; j < SourceLineByLine.Count; j++ ) {
@@ -258,6 +259,22 @@ namespace RLECoding
                     Blue = valuesFromLine[i + 2]
                 } );
             }
+        }
+
+        public List<ushort> GetPixelsDataAsList()
+        {
+            List<ushort> values = new List<ushort>() {
+                Capacity = Data.Pixels.Count * 3
+            };
+
+            foreach ( var pixel in Data.Pixels ) {
+                values.Add( pixel.Red );
+                values.Add( pixel.Green );
+                values.Add( pixel.Blue );
+            }
+
+            values.TrimExcess();
+            return values;
         }
 
     }

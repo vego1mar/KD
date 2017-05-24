@@ -52,10 +52,9 @@
             this.tlaypMainWindow.Location = new System.Drawing.Point(0, 0);
             this.tlaypMainWindow.Name = "tlaypMainWindow";
             this.tlaypMainWindow.RowCount = 3;
-            this.tlaypMainWindow.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 65F));
-            this.tlaypMainWindow.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tlaypMainWindow.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 75F));
             this.tlaypMainWindow.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15F));
-            this.tlaypMainWindow.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tlaypMainWindow.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
             this.tlaypMainWindow.Size = new System.Drawing.Size(873, 399);
             this.tlaypMainWindow.TabIndex = 0;
             // 
@@ -67,27 +66,27 @@
             this.txbInputFile.Name = "txbInputFile";
             this.txbInputFile.ReadOnly = true;
             this.txbInputFile.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txbInputFile.Size = new System.Drawing.Size(430, 253);
+            this.txbInputFile.Size = new System.Drawing.Size(430, 293);
             this.txbInputFile.TabIndex = 2;
             this.txbInputFile.Text = "Input board";
             // 
             // btnBrowseFile
             // 
             this.btnBrowseFile.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnBrowseFile.Location = new System.Drawing.Point(3, 341);
+            this.btnBrowseFile.Location = new System.Drawing.Point(3, 361);
             this.btnBrowseFile.Name = "btnBrowseFile";
-            this.btnBrowseFile.Size = new System.Drawing.Size(430, 55);
+            this.btnBrowseFile.Size = new System.Drawing.Size(430, 35);
             this.btnBrowseFile.TabIndex = 0;
-            this.btnBrowseFile.Text = "Browse a .ppm image (in ASCII) file...";
+            this.btnBrowseFile.Text = "Browse a .ppm ASCII image file...";
             this.btnBrowseFile.UseVisualStyleBackColor = true;
             this.btnBrowseFile.Click += new System.EventHandler(this.BtnBrowseFile_Click);
             // 
             // btnBuildRleCode
             // 
             this.btnBuildRleCode.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnBuildRleCode.Location = new System.Drawing.Point(439, 341);
+            this.btnBuildRleCode.Location = new System.Drawing.Point(439, 361);
             this.btnBuildRleCode.Name = "btnBuildRleCode";
-            this.btnBuildRleCode.Size = new System.Drawing.Size(431, 55);
+            this.btnBuildRleCode.Size = new System.Drawing.Size(431, 35);
             this.btnBuildRleCode.TabIndex = 1;
             this.btnBuildRleCode.Text = "Build RLE code";
             this.btnBuildRleCode.UseVisualStyleBackColor = true;
@@ -101,31 +100,31 @@
             this.txbRleOutputCode.Name = "txbRleOutputCode";
             this.txbRleOutputCode.ReadOnly = true;
             this.txbRleOutputCode.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txbRleOutputCode.Size = new System.Drawing.Size(431, 253);
+            this.txbRleOutputCode.Size = new System.Drawing.Size(431, 293);
             this.txbRleOutputCode.TabIndex = 3;
             this.txbRleOutputCode.Text = "Output board";
             // 
             // txbSummaryInputFile
             // 
             this.txbSummaryInputFile.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txbSummaryInputFile.Location = new System.Drawing.Point(3, 262);
+            this.txbSummaryInputFile.Location = new System.Drawing.Point(3, 302);
             this.txbSummaryInputFile.Multiline = true;
             this.txbSummaryInputFile.Name = "txbSummaryInputFile";
             this.txbSummaryInputFile.ReadOnly = true;
             this.txbSummaryInputFile.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txbSummaryInputFile.Size = new System.Drawing.Size(430, 73);
+            this.txbSummaryInputFile.Size = new System.Drawing.Size(430, 53);
             this.txbSummaryInputFile.TabIndex = 4;
             this.txbSummaryInputFile.Text = "Summary for an input file";
             // 
             // txbSummaryOutputFile
             // 
             this.txbSummaryOutputFile.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txbSummaryOutputFile.Location = new System.Drawing.Point(439, 262);
+            this.txbSummaryOutputFile.Location = new System.Drawing.Point(439, 302);
             this.txbSummaryOutputFile.Multiline = true;
             this.txbSummaryOutputFile.Name = "txbSummaryOutputFile";
             this.txbSummaryOutputFile.ReadOnly = true;
             this.txbSummaryOutputFile.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txbSummaryOutputFile.Size = new System.Drawing.Size(431, 73);
+            this.txbSummaryOutputFile.Size = new System.Drawing.Size(431, 53);
             this.txbSummaryOutputFile.TabIndex = 5;
             this.txbSummaryOutputFile.Text = "Summary for the output file";
             // 

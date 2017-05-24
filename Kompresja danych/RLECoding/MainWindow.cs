@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace RLECoding
 {
@@ -100,8 +101,92 @@ namespace RLECoding
                 return;
             }
 
-            // TODO: Build RLE code.
-            // TODO: Update UI with a summary.
+            string rleText = "Yes = RLE encoding with TAB + CR/LF" + Environment.NewLine +
+                "No = RLE encoding with single SPACE only";
+            string rleCaption = "Choose encoding mode!";
+            DialogResult chosenOption = MessageBox.Show( rleText, rleCaption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question );
+            string rleCode = string.Empty;
+
+            if ( chosenOption != DialogResult.Cancel ) {
+                UpdateTextAndRefresh( txbRleOutputCode, "Building..." );
+                UpdateTextAndRefresh( txbSummaryOutputFile, "Please wait for results..." );
+            }
+
+            switch ( chosenOption ) {
+            case DialogResult.Yes:
+                rleCode = BuildSimpleRleCode( false );
+                break;
+            case DialogResult.No:
+                rleCode = BuildSimpleRleCode( true );
+                break;
+            default:
+                return;
+            }
+
+            txbRleOutputCode.Text = rleCode;
+            int countedNumbers = PpmFile.Data.Pixels.Count * 3;
+            double compressionRate = (Convert.ToDouble( rleCode.Length ) / Convert.ToDouble( PpmFile.FileSizeInBytes )) * 100.0;
+            txbSummaryOutputFile.Text = "Content length: " + rleCode.Length + Environment.NewLine +
+                "Numbers counted: " + countedNumbers + " pairs of (value, occurences)" + Environment.NewLine +
+                "Part of original file: " + compressionRate + " %" + Environment.NewLine;
+        }
+
+        private string BuildSimpleRleCode( bool useOnlySingleSpaces = false )
+        {
+            StringBuilder builder = new StringBuilder();
+            List<ushort> values = PpmFile.GetPixelsDataAsList();
+            ulong repeats = 0;
+            AppendPpmHeaderFile( ref builder );
+
+            if ( !useOnlySingleSpaces ) {
+                builder.AppendLine();
+            }
+
+            for ( int i = 0; i < values.Count - 1; i++ ) {
+                if ( values[i + 1] == values[i] ) {
+                    repeats++;
+                }
+                else {
+                    builder.Append( values[i] );
+
+                    if ( !useOnlySingleSpaces ) {
+                        builder.Append( '\t' );
+                    }
+                    else {
+                        builder.Append( ' ' );
+                    }
+
+                    builder.Append( repeats + 1 );
+
+                    if ( !useOnlySingleSpaces ) {
+                        builder.AppendLine();
+                    }
+                    else {
+                        builder.Append( ' ' );
+                    }
+
+                    repeats = 0;
+                }
+            }
+
+            return builder.ToString();
+        }
+
+        private void AppendPpmHeaderFile( ref StringBuilder builder )
+        {
+            const char PARAGRAPH_UNICODE_SIGN = '\x00B6';
+            builder.Append( PARAGRAPH_UNICODE_SIGN );
+            builder.Append( ' ' );
+            builder.Append( PpmFile.Data.Marker );
+            builder.Append( ' ' );
+            builder.Append( PpmFile.Data.Width );
+            builder.Append( ' ' );
+            builder.Append( PpmFile.Data.Heigth );
+            builder.Append( ' ' );
+            builder.Append( PpmFile.Data.MaxValue );
+            builder.Append( ' ' );
+            builder.Append( PARAGRAPH_UNICODE_SIGN );
+            builder.Append( ' ' );
         }
 
     }
