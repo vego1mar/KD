@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShannonFanoCoding", "Shanno
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArithmeticCoding", "ArithmeticCoding\ArithmeticCoding.csproj", "{5AE44E9D-F9DA-4BAB-92C1-7672A8C51A9C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RLECoding", "RLECoding\RLECoding.csproj", "{C24A0F87-DCBE-420B-8FBF-5414CA0D23B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{5AE44E9D-F9DA-4BAB-92C1-7672A8C51A9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AE44E9D-F9DA-4BAB-92C1-7672A8C51A9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AE44E9D-F9DA-4BAB-92C1-7672A8C51A9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C24A0F87-DCBE-420B-8FBF-5414CA0D23B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C24A0F87-DCBE-420B-8FBF-5414CA0D23B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C24A0F87-DCBE-420B-8FBF-5414CA0D23B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C24A0F87-DCBE-420B-8FBF-5414CA0D23B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

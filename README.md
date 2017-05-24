@@ -7,3 +7,4 @@ An academic code related with data compression.
 3. Huffman code coder and decoder.
 4. Shannon-Fano code coder.
 5. Arithmetic code coder and decoder.
+6. RLE encoding based on a .ppm image file.
